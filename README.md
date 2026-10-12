@@ -4,16 +4,31 @@
 
 这是独立、非官方项目，与 Apple 没有隶属或授权关系。协议兼容性参考 MIT 许可的 [pyatv](https://github.com/postlund/pyatv)，保留其版权与来源说明。
 
+## 下载
+
+**当前公开仓库还没有正式签名的 Release 安装包。** 想试用应用，可以下载 Android CI 生成的 debug 测试包：
+
+### 下载测试 APK
+
+1. 登录 GitHub，打开 **[Android CI 构建列表](https://github.com/ztlyyznf001/appletv-remote-android-community/actions/workflows/android-ci.yml)**。
+2. 选择分支为 **main**、状态为 **成功（绿色勾选）** 且产物未过期的最近一次运行，进入运行详情。
+3. 在 **Artifacts** 区域点击 `android-debug-<run id>-<attempt>`，下载 ZIP 文件。`android-reports-...` 是测试报告，不是安装包。
+4. 解压 ZIP，找到 `app-debug.apk`，在 Android 8.0 或以上手机安装。
+
+本仓库的 CI 产物需要登录 GitHub 后下载，保留 **7 天**；到期或被删除后链接会失效。没有可下载产物时，可查看后续成功的 main 构建，或按 [开发指南](docs/DEVELOPMENT.md) 自行构建。
+
+**升级提醒：** CI debug 包使用临时测试签名，本地与不同次 CI 构建的签名可能不同，不能保证覆盖已有安装，也不能视为固定签名的正式更新包。不要为解决冲突贸然卸载或清除应用数据，这会丢失配对信息。当前没有配对导入/导出或跨签名迁移功能。
+
+### 未签名候选不能直接安装
+
+`Android unsigned release candidate` 工作流的 `android-release-candidate-...` 产物用于构建和来源校验，其中的 `app-release-unsigned.apk` **未签名，不能直接安装**。公开流程不会自动创建 tag 或 GitHub Release；正式签名由维护者在私有环境完成，密钥不会进入公开构建。详见 [构建与签名边界](docs/CI-CD.md)。
+
 ## 快速开始
 
-本仓库提供干净源码、无需 Secrets 的公共 CI，以及手动运行的未签名 release 候选构建。**候选不能直接安装，也不会自动创建 tag 或 GitHub Release。** 正式签名由维护者在私有环境完成，密钥不会进入公开构建。详见 [构建与签名边界](docs/CI-CD.md)。
-
-1. 按 [开发指南](docs/DEVELOPMENT.md) 构建 debug APK；也可在 Actions → Android CI 的成功运行中下载 `android-debug-<run id>-<attempt>` 测试产物，通常需要登录 GitHub。
+1. 从上方“下载”获取测试 APK，或按 [开发指南](docs/DEVELOPMENT.md) 本地构建 debug APK。
 2. 在 Android 8.0 或以上手机安装；手机与 Apple TV 连接同一可互通局域网。
 3. 唤醒电视，从顶部选择设备，点击“连接 / 配对”，输入电视显示的 4 位 PIN。
 4. 搜不到时按 [安装指南](docs/INSTALL.md) 手动填写 IPv4 和 Companion 端口；端口不是固定值。
-
-**升级提醒：** 本地和 CI debug APK 可能使用不同签名，不能保证相互覆盖安装。不要为解决冲突贸然卸载，卸载会丢失配对信息。当前没有配对导入/导出或跨签名迁移功能。
 
 ## 功能
 
