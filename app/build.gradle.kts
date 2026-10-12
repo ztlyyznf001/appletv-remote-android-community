@@ -6,7 +6,7 @@ plugins {
 android {
     namespace = "info.remote.appletv"
     compileSdk = 36
-    defaultConfig { applicationId = "info.remote.appletv"; minSdk = 26; targetSdk = 36; versionCode = 7; versionName = "0.2.2"; testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
+    defaultConfig { applicationId = "info.remote.appletv"; minSdk = 26; targetSdk = 36; versionCode = 8; versionName = "0.2.3"; testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
     buildFeatures { compose = true }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
