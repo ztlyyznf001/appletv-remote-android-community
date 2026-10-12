@@ -55,7 +55,7 @@ python3 scripts/ci/pipeline.py verify
 在已提交源码的 Git checkout 中，可执行：
 
 ```sh
-python3 scripts/ci/pipeline.py release --tag v0.2.2
+python3 scripts/ci/pipeline.py release --tag v0.2.3
 ```
 
 参数须匹配 APK 实际 versionName，源码必须是干净、已提交的 Git checkout。该命令执行 JVM 单测、debug/release lint、debug/release 构建和仪器测试编译，生成 `build/release-candidate/` 中的未签名包、校验和与 schema 1 来源 manifest。目录已存在时退出，先检查并移动旧产物。它不读密钥、不创建 tag、不操作 GitHub；候选 APK 不能直接安装。
@@ -63,7 +63,7 @@ python3 scripts/ci/pipeline.py release --tag v0.2.2
 也可明确核对来源和版本：
 
 ```sh
-python3 scripts/ci/pipeline.py release --version-name 0.2.2 --source-commit "$(git rev-parse HEAD)"
+python3 scripts/ci/pipeline.py release --version-name 0.2.3 --source-commit "$(git rev-parse HEAD)"
 ```
 
 命令不改写应用版本；版本不匹配、源码 SHA 不符、工作区不干净、APK 带签名或可调试均拒绝输出候选。公开手动工作流还会限制 main 来源，步骤和 manifest 契约见 [CI 文档](CI-CD.md)。
