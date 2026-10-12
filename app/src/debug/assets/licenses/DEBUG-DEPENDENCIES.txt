@@ -1,0 +1,6 @@
+仅 debug 主 APK 额外包含（Apache-2.0；完整文本见 Apache-2.0.txt）：
+androidx.compose.material:material-android:1.7.6
+androidx.compose.ui:ui-test-manifest:1.7.6
+androidx.compose.ui:ui-tooling-android:1.7.6
+androidx.compose.ui:ui-tooling-data-android:1.7.6
+来源 https://github.com/androidx/androidx

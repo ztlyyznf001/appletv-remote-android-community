@@ -1,0 +1,7 @@
+仅测试 APK / Test-only dependencies
+JUnit 4.13.2: EPL-1.0; unmodified source https://github.com/junit-team/junit4/tree/r4.13.2
+Hamcrest 1.3: BSD-3-Clause; unmodified source https://github.com/hamcrest/JavaHamcrest/tree/hamcrest-java-1.3
+上述库不属于 release 主 APK 运行时。
+AndroidX Test / Compose UI Test: Apache-2.0; https://github.com/android/android-test ; https://github.com/androidx/androidx
+其他测试辅助库采用 Apache-2.0，相关源码见项目 THIRD_PARTY_NOTICES.md。
+无修改的 JUnit 源码可从上面固定 tag 免费获取；不对第三方贡献者提供额外保证或责任。

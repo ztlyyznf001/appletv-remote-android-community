@@ -1,0 +1,5 @@
+/gradlew text eol=lf
+/gradlew.bat text eol=crlf
+/gradle/wrapper/gradle-wrapper.jar binary
+/.github/workflows/*.yml text eol=lf
+/scripts/ci/*.sh text eol=lf

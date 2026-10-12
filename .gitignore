@@ -1,0 +1,28 @@
+.gradle/
+.idea/
+local.properties
+**/build/
+*.iml
+tools/
+
+# Local/generated artifacts and signing material
+.DS_Store
+*.apk
+*.aab
+*.log
+*.jks
+*.keystore
+*.p12
+*.pfx
+keystore.properties
+.env
+.env.*
+
+.kotlin/
+
+# Python CI script caches
+__pycache__/
+*.pyc
+
+# Private release signing backup
+.signing/
