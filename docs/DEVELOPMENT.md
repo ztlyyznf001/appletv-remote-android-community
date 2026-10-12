@@ -58,7 +58,15 @@ python3 scripts/ci/pipeline.py verify
 python3 scripts/ci/pipeline.py release --tag v0.2.2
 ```
 
-参数须匹配源码 versionName。该命令生成 build/release-candidate 中的未签名包、校验和与来源元数据，不读密钥、不创建 tag、不操作 GitHub。目录已存在时退出，先检查并移动旧产物。
+参数须匹配 APK 实际 versionName，源码必须是干净、已提交的 Git checkout。该命令执行 JVM 单测、debug/release lint、debug/release 构建和仪器测试编译，生成 `build/release-candidate/` 中的未签名包、校验和与 schema 1 来源 manifest。目录已存在时退出，先检查并移动旧产物。它不读密钥、不创建 tag、不操作 GitHub；候选 APK 不能直接安装。
+
+也可明确核对来源和版本：
+
+```sh
+python3 scripts/ci/pipeline.py release --version-name 0.2.2 --source-commit "$(git rev-parse HEAD)"
+```
+
+命令不改写应用版本；版本不匹配、源码 SHA 不符、工作区不干净、APK 带签名或可调试均拒绝输出候选。公开手动工作流还会限制 main 来源，步骤和 manifest 契约见 [CI 文档](CI-CD.md)。
 
 ## 许可资源
 
@@ -71,7 +79,7 @@ python3 scripts/ci/pipeline.py release --tag v0.2.2
 - app：Compose、生命周期、NSD、加密存储及状态机。
 - protocol：编码、认证、加密会话、JVM 测试和合成 bplist。
 - scripts/ci：检查脚本与流程测试。
-- .github/workflows/android-ci.yml：无发布 Secrets 的 CI。
+- .github/workflows：只读、无 Secrets 的 CI 和未签名候选构建。
 - docs：中文文档。
 
 构建和测试不需要原始逆向输出或个人开发环境。不要记录输入正文、PIN、配对身份或敏感抓包。

@@ -6,7 +6,7 @@
 
 ## 快速开始
 
-本仓库提供干净源码快照和无需签名 Secrets 的公共 CI，**尚未配置正式签名或 GitHub Release 发布**。
+本仓库提供干净源码、无需 Secrets 的公共 CI，以及手动运行的未签名 release 候选构建。**候选不能直接安装，也不会自动创建 tag 或 GitHub Release。** 正式签名由维护者在私有环境完成，密钥不会进入公开构建。详见 [构建与签名边界](docs/CI-CD.md)。
 
 1. 按 [开发指南](docs/DEVELOPMENT.md) 构建 debug APK；也可在 Actions → Android CI 的成功运行中下载 `android-debug-<run id>-<attempt>` 测试产物，通常需要登录 GitHub。
 2. 在 Android 8.0 或以上手机安装；手机与 Apple TV 连接同一可互通局域网。
