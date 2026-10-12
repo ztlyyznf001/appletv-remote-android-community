@@ -4,6 +4,8 @@
 
 本公开快照尚未发布正式签名安装包。可按 [开发指南](DEVELOPMENT.md) 本地构建，或打开 Actions → Android CI → 成功运行 → Artifacts，下载 `android-debug-<run id>-<attempt>` 并解压 `app-debug.apk`。下载通常需要登录 GitHub，产物保留 7 天。
 
+Actions 中的 `android-release-candidate-<run id>-<attempt>` 是供维护者复核来源和后续签名的构建产物。其中 `app-release-unsigned.apk` **未签名、不能直接安装**，不是已经发布的正式安装包。正式签名只在维护者私有环境完成。
+
 需要 Android 8.0 及以上。系统若提示安装来源授权，只给打开 APK 的浏览器/文件管理器必要权限，完成后可关闭。不要安装来源不明的同名包。
 
 当前源码应用 ID 为 `info.remote.appletv`，版本 `0.2.2` / code `7`。它描述源码，不表示本仓库已有正式 v0.2.2 Release。

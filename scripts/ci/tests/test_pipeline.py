@@ -49,18 +49,19 @@ class PipelineTest(unittest.TestCase):
             with zipfile.ZipFile(apk, "w") as archive:
                 archive.writestr("AndroidManifest.xml", b"test manifest")
             output = root / "out"
-            pipeline.stage_release(apk, output, {"version_name": "0.2.1"}, "v0.2.1", "a" * 40)
+            apk_metadata = {"version_name": "0.2.1", "version_code": 5, "application_id": "info.remote.appletv"}
+            pipeline.stage_release(apk, output, apk_metadata, "v0.2.1", "a" * 40, "b" * 40)
             self.assertEqual({"app-release-unsigned.apk", "SHA256SUMS", "release-metadata.json"}, {p.name for p in output.iterdir()})
             metadata = json.loads((output / "release-metadata.json").read_text())
             self.assertEqual("unsigned", metadata["signing"])
             self.assertEqual(pipeline.sha256(apk), metadata["apk_sha256"])
-            self.assertEqual("a" * 40, metadata["commit"])
+            self.assertEqual("a" * 40, metadata["source_commit"])
             with self.assertRaises(FileExistsError):
-                pipeline.stage_release(apk, output, {"version_name": "0.2.1"}, "v0.2.1", "a" * 40)
+                pipeline.stage_release(apk, output, apk_metadata, "v0.2.1", "a" * 40, "b" * 40)
 
     def test_invalid_commit_never_creates_candidate(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp) / "out"
             with self.assertRaises(ValueError):
-                pipeline.stage_release(Path(tmp) / "missing.apk", out, {"version_name": "0.2.1"}, "v0.2.1", "main")
+                pipeline.stage_release(Path(tmp) / "missing.apk", out, {"version_name": "0.2.1"}, "v0.2.1", "main", "b" * 40)
             self.assertFalse(out.exists())

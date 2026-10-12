@@ -1,0 +1,93 @@
+name: Android unsigned release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Exact APK versionName, without v (for example 0.2.2)'
+        required: true
+        type: string
+      source_commit:
+        description: 'Full lowercase 40-character commit SHA already on main'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-release-candidate-${{ github.run_id }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  candidate:
+    name: Verify and build unsigned release candidate
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.repository == 'ztlyyznf001/appletv-remote-android-community' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      RELEASE_VERSION_NAME: ${{ inputs.version_name }}
+      RELEASE_SOURCE_COMMIT: ${{ inputs.source_commit }}
+    steps:
+      # Keep the reviewed main tooling separate from the chosen source snapshot.
+      - name: Check out workflow control at the exact main dispatch SHA
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          path: control
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate inputs and main provenance before source checkout
+        id: validated
+        run: python3 control/scripts/ci/pipeline.py validate-candidate-inputs --source-dir control
+      - name: Check out the exact validated source SHA
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ steps.validated.outputs.source_commit }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          validate-wrappers: true
+          cache-provider: basic
+          cache-read-only: true
+          dependency-graph: disabled
+      - name: Validate workflow and pipeline scripts
+        run: |
+          control/scripts/ci/lint-workflows.sh
+          python3 -m unittest discover -s control/scripts/ci/tests -v
+          python3 -m unittest discover -s source/scripts/ci/tests -v
+      - name: Test, lint and build the unsigned release candidate
+        run: python3 control/scripts/ci/pipeline.py release --source-dir source
+      - name: Upload test and lint reports
+        if: ${{ always() && !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android-candidate-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            source/app/build/reports/
+            source/app/build/test-results/
+            source/protocol/build/reports/
+            source/protocol/build/test-results/
+          if-no-files-found: warn
+          retention-days: 7
+          archive: true
+      - name: Upload unsigned candidate (not an installable release)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: android-release-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            source/build/release-candidate/app-release-unsigned.apk
+            source/build/release-candidate/SHA256SUMS
+            source/build/release-candidate/release-metadata.json
+          if-no-files-found: error
+          retention-days: 7
+          archive: true

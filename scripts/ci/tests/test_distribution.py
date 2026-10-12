@@ -32,12 +32,31 @@ class DistributionTest(unittest.TestCase):
 
     def test_public_ci_has_no_signing_or_publication_job(self):
         workflows = sorted((ROOT / ".github/workflows").glob("*.yml"))
-        self.assertEqual(["android-ci.yml"], [p.name for p in workflows])
-        workflow = workflows[0].read_text()
-        self.assertIn("contents: read", workflow)
-        self.assertIn("Tests, lint and debug APK", workflow)
-        for forbidden in ("secrets.", "contents: write", "pull_request_target:", "workflow_run:", "gh release"):
-            self.assertNotIn(forbidden, workflow)
+        self.assertEqual(["android-ci.yml", "android-release-candidate.yml"], [p.name for p in workflows])
+        self.assertIn("Tests, lint and debug APK", workflows[0].read_text())
+        for path in workflows:
+            workflow = path.read_text()
+            self.assertIn("permissions:\n  contents: read", workflow)
+            for forbidden in ("secrets", ": write", "pull_request_target:", "workflow_run:", "gh release", "repository_dispatch", "environment:"):
+                with self.subTest(workflow=path.name, forbidden=forbidden):
+                    self.assertNotIn(forbidden, workflow)
+            for action in re.findall(r"uses:\s+(\S+)", workflow):
+                self.assertRegex(action, r"^[\w/-]+@[0-9a-f]{40}$")
+
+    def test_release_candidate_is_manual_main_only_and_unsigned(self):
+        workflow = (ROOT / ".github/workflows/android-release-candidate.yml").read_text()
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertNotIn("\n  push:", workflow)
+        self.assertNotIn("\n  pull_request:", workflow)
+        self.assertIn("github.ref == 'refs/heads/main'", workflow)
+        self.assertIn("ref: ${{ github.sha }}", workflow)
+        self.assertIn("ref: ${{ steps.validated.outputs.source_commit }}", workflow)
+        self.assertIn("persist-credentials: false", workflow)
+        self.assertIn("cache-read-only: true", workflow)
+        self.assertIn("app-release-unsigned.apk", workflow)
+        self.assertIn("release-metadata.json", workflow)
+        # Inputs travel through environment variables, never interpolated into shell.
+        self.assertEqual(2, workflow.count("${{ inputs."))
 
     def test_documentation_local_links_resolve(self):
         pages = [ROOT / name for name in ("README.md", "CONTRIBUTING.md", "SECURITY.md", "THIRD_PARTY_NOTICES.md", "protocol/README.md")]
